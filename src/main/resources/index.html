@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <style>
+      body {
+        text-align: center;
+        font-size: 18px;
+      }
+      p {
+        padding: 5px;
+        margin: 0px;
+      }
+      button {
+        width: 150px;
+        height: 25px;
+        font-size: 12px;
+        border-radius: 3px;
+        background-color: lightgreen;
+      }
+      input {
+        width: 100px;
+        height: 20px;
+        border-radius: 3px;
+        border-style: groove;
+      }
+      #setActiveResponse,
+      #getActiveResponse,
+      #getAddressResponse,
+      #registerResponse,
+      #queryResponse,
+      #deleteResponse,
+      #sendResponse {
+        height: 35px;
+        padding: 8px;
+        font-size: 15px;
+      }
+      #wallet {
+        height: 380px;
+        padding: 2px;
+      }
+      #contract {
+        height: 380px;
+        padding: 2px;
+      }
+      #assetTransaction {
+        height: 200px;
+      }
+    </style>
+    <script>
+      var host = "http://127.0.0.1";
+      var port = 8080;
+      var showTimeLong = 30000;
+      var showTimeShort = 8000;
+    </script>
+  </head>
+
+  <body>
+    <div id="home">
+      <h2 id="welcome">Welcome to this neow3j tutorial!</h2>
+      <div id="init">
+        <button id="createWalletButton">Initialize your Wallet</button>
+        <script>
+          $("#createWalletButton").click(function () {
+            var request = new XMLHttpRequest();
+            var url = `${host}:${port}/`;
+            request.open("POST", url, true);
+            request.onload = function () {
+              console.log(this.response);
+              $("#home").hide();
+              $("#actions").show();
+            };
+            request.send();
+          });
+        </script>
+      </div>
+    </div>
+    <div id="actions" style="display: none;">
+      <div id="wallet">
+        <h4>Interact with your wallet</h4>
+        <div id="getActiveAccount">
+          <p>Get the active account's address.</p>
+          <button id="getActiveAccountButton">Get active account</button>
+          <script>
+            $("#getActiveAccountButton").click(function () {
+              var request = new XMLHttpRequest();
+              var url = `${host}:${port}/wallet`;
+              request.open("GET", url, true);
+              request.onload = function () {
+                console.log(this.response);
+                var div = $("#getActiveResponse");
+                div.show();
+                div.text("Account active: " + this.response);
+                setTimeout(function () {
+                  div.text("");
+                }, showTimeLong);
+              };
+              request.send();
+            });
+          </script>
+          <div id="getActiveResponse"></div>
+        </div>
+
+        <div id="setActiveAccount">
+          <p>
+            Set an account from your wallet active to be used for a contract
+            invocation or a transaction of Neo.
+          </p>
+          <input
+            id="setActiveAccountInput"
+            placeholder="Index In Wallet"
+          /><button id="setActiveAccountButton">Set active account</button>
+          <script>
+            $("#setActiveAccountButton").click(function () {
+              var request = new XMLHttpRequest();
+              var accountId = $("#setActiveAccountInput").val();
+              if (accountId == "") {
+                accountId = 1;
+              }
+              var url = `${host}:${port}/wallet?accountId=${accountId}`;
+              request.open("POST", url, true);
+              request.onload = function () {
+                console.log(this.response);
+                var div = $("#setActiveResponse");
+                div.show();
+                div.text("Account activated: " + this.response);
+                setTimeout(function () {
+                  div.text("");
+                }, showTimeShort);
+              };
+              request.send();
+            });
+          </script>
+          <div id="setActiveResponse"></div>
+        </div>
+
+        <div id="account">
+          <p>Get the address of an account in your wallet by its index.</p>
+          <input id="accountIdInput" placeholder="Index In Wallet" /><button
+            id="getAccountButton"
+          >
+            Get Address
+          </button>
+          <script>
+            $("#getAccountButton").click(function () {
+              var request = new XMLHttpRequest();
+              var accountId = $("#accountIdInput").val();
+              var url = `${host}:${port}/wallet/${accountId}`;
+              request.open("GET", url, true);
+              request.onload = function () {
+                console.log(this.response);
+                var div = $("#getAddressResponse");
+                if (accountId == "") {
+                  div.text("Please provide an index.");
+                } else {
+                  if (this.response == "") {
+                    div.text("There is no address at this index.");
+                  } else {
+                    console.log(accountId);
+                    div.text(
+                      `Account address at index ${accountId}: ` + this.response
+                    );
+                    setTimeout(function () {
+                      div.text("");
+                    }, showTimeLong);
+                  }
+                }
+              };
+              request.send();
+            });
+          </script>
+          <div id="getAddressResponse"></div>
+        </div>
+      </div>
+
+      <div id="contract">
+        <div id="register">
+          <h4>Invoke the ANS contract</h4>
+          <p>Register a name for your active address.</p>
+          <input id="registerInput" placeholder="Enter Name" /><button
+            id="registerButton"
+          >
+            Register
+          </button>
+          <script>
+            $("#registerButton").click(function () {
+              var request = new XMLHttpRequest();
+              var name = $("#registerInput").val();
+              var url = `${host}:${port}/ans?name=${name}`;
+              request.open("POST", url, true);
+              request.onload = function () {
+                console.log(this.response);
+                var div = $("#registerResponse");
+                if (this.response == "true") {
+                  div.text("Register invocation sent to ANS contract.");
+                  setTimeout(function () {
+                    div.text("");
+                  }, showTimeShort);
+                } else {
+                  div.text("Something went wrong...");
+                }
+              };
+              request.send();
+            });
+          </script>
+          <div id="registerResponse"></div>
+        </div>
+
+        <div id="query">
+          <p>Query a registered name.</p>
+          <input id="queryInput" placeholder="Enter Name" /><button
+            id="queryButton"
+          >
+            Query
+          </button>
+          <script>
+            $("#queryButton").click(function () {
+              var request = new XMLHttpRequest();
+              var name = $("#queryInput").val();
+              var url = `${host}:${port}/ans/${name}`;
+              var div = $("#queryResponse");
+              request.open("GET", url, true);
+              request.onload = function () {
+                console.log(this.response);
+                if (this.response == "") {
+                  div.text(`No address found for ${name}.`);
+                  setTimeout(function () {
+                    div.text("");
+                  }, showTimeShort);
+                } else {
+                  div.text(`${name} is linked to ${this.response}`);
+                  setTimeout(function () {
+                    div.text("");
+                  }, showTimeLong);
+                }
+              };
+              if (name != "") {
+                request.send();
+              } else {
+                div.text("Please provide a name.");
+              }
+            });
+          </script>
+          <div id="queryResponse"></div>
+        </div>
+
+        <div id="delete">
+          <p>Delete a registered name.</p>
+          <input id="deleteInput" placeholder="Enter Name" /><button
+            id="deleteButton"
+          >
+            Delete
+          </button>
+          <script>
+            $("#deleteButton").click(function () {
+              var request = new XMLHttpRequest();
+              var deleteName = $("#deleteInput").val();
+              var url = `${host}:${port}/ans/delete?name=${deleteName}`;
+              var div = $("#deleteResponse");
+              request.open("POST", url, true);
+              request.onload = function () {
+                console.log(this.response);
+                if (this.response == "true") {
+                  div.text(
+                    `Delete invocation for ${name} sent to ANS contract.`
+                  );
+                  setTimeout(function () {
+                    div.text("");
+                  }, showTimeShort);
+                } else {
+                  div.text("Something went wrong...");
+                }
+              };
+              if (name != "") {
+                request.send();
+              } else {
+                div.text("Please provide a name.");
+                setTimeout(function () {
+                  div.text("");
+                }, showTimeShort);
+              }
+            });
+          </script>
+          <div id="deleteResponse"></div>
+        </div>
+      </div>
+
+      <div id="assetTransaction">
+        <h4>Send Neo using the name service of the ANS contract</h4>
+        <div id="send">
+          <input id="sendNameInput" placeholder="Recipient's Name" />
+          <input id="sendAmountInput" placeholder="NEO Amount" /><button
+            id="sendButton"
+          >
+            Send
+          </button>
+          <script>
+            $("#sendButton").click(function () {
+              var request = new XMLHttpRequest();
+              var name = $("#sendNameInput").val();
+              var amount = $("#sendAmountInput").val();
+              var url = `${host}:${port}/send?name=${name}&amount=${amount}`;
+              request.open("POST", url, true);
+              request.onload = function () {
+                console.log(this.response);
+                var div = $("#sendResponse");
+                if (this.response == "true") {
+                  div.text(`${amount} Neo sent to ${name}.`);
+                  setTimeout(function () {
+                    div.text("");
+                  }, showTimeShort);
+                } else {
+                  div.text("Something went wrong...");
+                }
+              };
+              request.send();
+            });
+          </script>
+          <div id="sendResponse"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
