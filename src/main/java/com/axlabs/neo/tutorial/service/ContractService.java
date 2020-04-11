@@ -9,13 +9,13 @@ import io.neow3j.protocol.core.methods.response.InvocationResult;
 import io.neow3j.protocol.exceptions.ErrorResponseException;
 import io.neow3j.wallet.Account;
 import io.neow3j.wallet.AssetTransfer;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-
 @Service
 public class ContractService {
+
     private final Neow3j neow3j;
     private final ScriptHash contractScriptHash;
     private final ContractParameter REGISTER = ContractParameter.string("register");
@@ -29,12 +29,12 @@ public class ContractService {
         this.contractScriptHash = new ScriptHash("0x83cb6794bfc75f5ed4b5083cdc6c59545cd92834");
     }
 
-    public void setAccount(Account account) {
-        this.account = account;
-    }
-
     public Account getAccount() {
         return this.account;
+    }
+
+    public void setAccount(Account account) {
+        this.account = account;
     }
 
     public String register(String name) throws IOException, ErrorResponseException {
@@ -60,7 +60,8 @@ public class ContractService {
                 .account(this.account)
                 .build()
                 .testInvoke();
-        if (query.getStack().isEmpty() || query.getStack().get(0).asByteArray().getAsString().equals("")) {
+        if (query.getStack().isEmpty() || query.getStack().get(0).asByteArray().getAsString()
+                .equals("")) {
             return "";
         } else {
             return query.getStack().get(0).asByteArray().getAsAddress();
