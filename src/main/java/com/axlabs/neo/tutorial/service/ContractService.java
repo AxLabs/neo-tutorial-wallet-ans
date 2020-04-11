@@ -82,7 +82,7 @@ public class ContractService {
 
     public String sendNeo(String name, double amount) throws IOException, ErrorResponseException {
         this.account.updateAssetBalances(neow3j);
-        String recipientAddress = query(name);
+        String recipientAddress = this.query(name);
 
         AssetTransfer sendNeo = new AssetTransfer.Builder(neow3j)
                 .account(this.account)
