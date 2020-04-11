@@ -1,5 +1,6 @@
 package com.axlabs.neo.tutorial;
 
+import com.axlabs.neo.tutorial.dto.AddressResponse;
 import com.axlabs.neo.tutorial.service.ContractService;
 import com.axlabs.neo.tutorial.service.WalletService;
 import io.neow3j.protocol.exceptions.ErrorResponseException;
@@ -23,7 +24,7 @@ public class DappController {
 
     @Autowired
     public DappController(ContractService contractService,
-                             WalletService walletService) {
+            WalletService walletService) {
         this.contractService = contractService;
         this.walletService = walletService;
     }
@@ -43,28 +44,29 @@ public class DappController {
     }
 
     @GetMapping("/wallet")
-    @ResponseBody
-    public String getActiveAccountAddress() {
-        return contractService.getAccount().getAddress();
+    public AddressResponse getActiveAccountAddress() {
+        String address = contractService.getAccount().getAddress();
+        return new AddressResponse(address);
     }
 
     @PostMapping("/wallet")
-    @ResponseBody
-    public String setActiveAccount(@RequestParam("accountId") int accountId) {
+    public AddressResponse setActiveAccount(@RequestParam("accountId") int accountId) {
         Account account = walletService.getAccount(accountId);
         contractService.setAccount(account);
-        return account.getAddress();
+        String address = account.getAddress();
+        return new AddressResponse(address);
     }
 
     @GetMapping("/wallet/{accountId}")
-    @ResponseBody
-    public String getAddress(@PathVariable("accountId") int accountId) {
-        return walletService.getAccountAddress(accountId);
+    public AddressResponse getAddress(@PathVariable("accountId") int accountId) {
+        String address = walletService.getAccountAddress(accountId);
+        return new AddressResponse(address);
     }
 
     @PostMapping("/ans")
     @ResponseBody
-    public String registerName(@RequestParam("name") String name) throws IOException, ErrorResponseException {
+    public String registerName(@RequestParam("name") String name)
+            throws IOException, ErrorResponseException {
         Account account = contractService.getAccount();
         if (name.equals("") || account == null) {
             return "";
@@ -75,8 +77,9 @@ public class DappController {
 
     @GetMapping("/ans/{name}")
     @ResponseBody
-    public String queryName(@PathVariable("name") String name) throws IOException, ErrorResponseException {
-        if (contractService.getAccount()!=null) {
+    public String queryName(@PathVariable("name") String name)
+            throws IOException, ErrorResponseException {
+        if (contractService.getAccount() != null) {
             return contractService.query(name);
         } else {
             return "account not set";
@@ -85,8 +88,9 @@ public class DappController {
 
     @PostMapping("/ans/delete")
     @ResponseBody
-    public String deleteName(@RequestParam("name") String name) throws IOException, ErrorResponseException {
-        if (contractService.getAccount()!=null) {
+    public String deleteName(@RequestParam("name") String name)
+            throws IOException, ErrorResponseException {
+        if (contractService.getAccount() != null) {
             return contractService.delete(name);
         } else {
             return "";
@@ -96,8 +100,8 @@ public class DappController {
     @PostMapping("/send")
     @ResponseBody
     public String sendNeo(@RequestParam("name") String name,
-                          @RequestParam("amount") double amount) throws IOException, ErrorResponseException {
-        if (contractService.getAccount()!=null) {
+            @RequestParam("amount") double amount) throws IOException, ErrorResponseException {
+        if (contractService.getAccount() != null) {
             return contractService.sendNeo(name, amount);
         } else {
             return "";

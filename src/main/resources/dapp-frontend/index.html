@@ -89,9 +89,10 @@
               request.open("GET", url, true);
               request.onload = function () {
                 console.log(this.response);
+                jsonObject = JSON.parse(this.response);
                 var div = $("#getActiveResponse");
                 div.show();
-                div.text("Account active: " + this.response);
+                div.text("Account active: " + jsonObject.address);
                 setTimeout(function () {
                   div.text("");
                 }, showTimeLong);
@@ -122,9 +123,10 @@
               request.open("POST", url, true);
               request.onload = function () {
                 console.log(this.response);
+                jsonObject = JSON.parse(this.response);
                 var div = $("#setActiveResponse");
                 div.show();
-                div.text("Account activated: " + this.response);
+                div.text("Account activated: " + jsonObject.address);
                 setTimeout(function () {
                   div.text("");
                 }, showTimeShort);
@@ -150,16 +152,17 @@
               request.open("GET", url, true);
               request.onload = function () {
                 console.log(this.response);
+                jsonObject = JSON.parse(this.response);
                 var div = $("#getAddressResponse");
                 if (accountId == "") {
                   div.text("Please provide an index.");
                 } else {
-                  if (this.response == "") {
+                  if (jsonObject.address == "") {
                     div.text("There is no address at this index.");
                   } else {
                     console.log(accountId);
                     div.text(
-                      `Account address at index ${accountId}: ` + this.response
+                      `Account address at index ${accountId}: ` + jsonObject.address
                     );
                     setTimeout(function () {
                       div.text("");
