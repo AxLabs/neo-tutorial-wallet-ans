@@ -1,4 +1,4 @@
-package com.axlabs.neo.tutorial;
+package com.axlabs.neo.tutorial.service;
 
 import io.neow3j.contract.ContractInvocation;
 import io.neow3j.contract.ContractParameter;

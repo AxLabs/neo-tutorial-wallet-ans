@@ -1,4 +1,4 @@
-package com.axlabs.neo.tutorial;
+package com.axlabs.neo.tutorial.config;
 
 import io.neow3j.protocol.Neow3j;
 import io.neow3j.protocol.http.HttpService;

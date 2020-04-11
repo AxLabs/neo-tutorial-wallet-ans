@@ -1,4 +1,4 @@
-package com.axlabs.neo.tutorial;
+package com.axlabs.neo.tutorial.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

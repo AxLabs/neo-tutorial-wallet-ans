@@ -1,5 +1,6 @@
-package com.axlabs.neo.tutorial;
+package com.axlabs.neo.tutorial.service;
 
+import com.axlabs.neo.tutorial.repository.WalletRepository;
 import io.neow3j.wallet.Account;
 import io.neow3j.wallet.Wallet;
 import org.springframework.beans.factory.annotation.Autowired;

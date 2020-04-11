@@ -1,21 +1,28 @@
 package com.axlabs.neo.tutorial;
 
+import com.axlabs.neo.tutorial.service.ContractService;
+import com.axlabs.neo.tutorial.service.WalletService;
 import io.neow3j.protocol.exceptions.ErrorResponseException;
 import io.neow3j.wallet.Account;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/")
 @RestController
-public class RestWebController {
+public class DappController {
 
     private final ContractService contractService;
     private final WalletService walletService;
 
     @Autowired
-    public RestWebController(ContractService contractService,
+    public DappController(ContractService contractService,
                              WalletService walletService) {
         this.contractService = contractService;
         this.walletService = walletService;
