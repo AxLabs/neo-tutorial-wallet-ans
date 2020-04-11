@@ -19,6 +19,7 @@ public class StaticContentConfig implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addRedirectViewController("/dapp", "/dapp/index.html");
+        registry.addRedirectViewController("/dapp/", "/dapp/index.html");
     }
 
     @Bean
