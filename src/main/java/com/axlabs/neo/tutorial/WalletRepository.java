@@ -1,4 +1,4 @@
-package neo.tutorial.wallet.ans;
+package com.axlabs.neo.tutorial;
 
 import io.neow3j.wallet.Account;
 import io.neow3j.wallet.Wallet;

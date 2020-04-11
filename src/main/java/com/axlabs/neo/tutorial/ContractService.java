@@ -1,4 +1,4 @@
-package neo.tutorial.wallet.ans;
+package com.axlabs.neo.tutorial;
 
 import io.neow3j.contract.ContractInvocation;
 import io.neow3j.contract.ContractParameter;

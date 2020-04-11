@@ -1,4 +1,4 @@
-package neo.tutorial.wallet.ans;
+package com.axlabs.neo.tutorial;
 
 import io.neow3j.protocol.Neow3j;
 import io.neow3j.protocol.http.HttpService;
