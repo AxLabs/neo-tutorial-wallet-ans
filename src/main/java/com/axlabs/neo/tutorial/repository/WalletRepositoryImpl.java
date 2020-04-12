@@ -40,4 +40,15 @@ public class WalletRepositoryImpl implements WalletRepository {
             return null;
         }
     }
+
+    @Override
+    public int getNumberAccountsInWallet() {
+        return this.wallet.getAccounts().size();
+    }
+
+    @Override
+    public int getIndexOfAccount(Account account) {
+        return this.wallet.getAccounts().indexOf(account);
+    }
+
 }

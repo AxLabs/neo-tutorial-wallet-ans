@@ -25,20 +25,16 @@
         border-radius: 3px;
         border-style: groove;
       }
-      #wallet {
-        height: 380px;
-        padding: 2px;
-      }
-      #contract {
-        padding: 2px;
-      }
+      #wallet,
+      #contract,
       #assetTransaction {
-        height: 200px;
         padding: 2px;
       }
       #setActiveResponse,
       #getActiveResponse,
       #getAddressResponse,
+      #balanceActiveResponse,
+      #balanceTotalResponse,
       #setContractResponse,
       #registerResponse,
       #queryResponse,
@@ -53,7 +49,7 @@
         padding: 6px;
       }
       #contractInput {
-        width: 280px;
+        width: 300px;
       }
     </style>
     <script>
@@ -120,8 +116,8 @@
           <script>
             $("#setActiveAccountButton").click(function () {
               var request = new XMLHttpRequest();
-              var accountId = $("#setActiveAccountInput").val();
-              var url = `${host}:${port}/wallet?accountId=${accountId}`;
+              var index = $("#setActiveAccountInput").val();
+              var url = `${host}:${port}/wallet?index=${index}`;
               var div = $("#setActiveResponse");
               request.open("POST", url, true);
               request.onload = function () {
@@ -139,7 +135,7 @@
                   }, showTimeLong);
                 }
               };
-              if (accountId != "") {
+              if (index != "") {
                 request.send();
               } else {
                 div.text("Please provide an index.");
@@ -151,13 +147,13 @@
 
         <div id="account">
           <p>Get the address of an account in your wallet by its index.</p>
-          <input id="accountIdInput" placeholder="Index In Wallet"/>
+          <input id="indexInput" placeholder="Index In Wallet"/>
           <button id="getAccountButton">Get Address</button>
           <script>
             $("#getAccountButton").click(function () {
               var request = new XMLHttpRequest();
-              var accountId = $("#accountIdInput").val();
-              var url = `${host}:${port}/wallet/${accountId}`;
+              var index = $("#indexInput").val();
+              var url = `${host}:${port}/wallet/${index}`;
               var div = $("#getAddressResponse");
               request.open("GET", url, true);
               request.onload = function () {
@@ -167,14 +163,14 @@
                   div.text("There is no address in your wallet at this index.");
                 } else {
                   div.text(
-                    `Account address at index ${accountId}: ${jsonObject.address}`
+                    `Account address at index ${index}: ${jsonObject.address}`
                   );
                   setTimeout(function () {
                     div.text("");
                   }, showTimeLong);
                 }
               };
-              if (accountId != "") {
+              if (index != "") {
                 request.send();
               } else {
                 div.text("Please provide an index.");
@@ -182,6 +178,59 @@
             });
           </script>
           <div id="getAddressResponse"></div>
+        </div>
+
+        <div id="balance">
+          <p>Get the balance of your active account and your whole wallet.</p>
+          <button id="getBalanceButton">Get Balance</button>
+          <script>
+            $("#getBalanceButton").click(function() {
+              var request = new XMLHttpRequest();
+              var url = `${host}:${port}/wallet/balance`;
+              var balanceActiveText = $("#balanceActiveText");
+              var balanceActiveNeo = $("#balanceActiveNeo");
+              var balanceActiveGas = $("#balanceActiveGas");
+              var balanceTotalText = $("#balanceTotalText");
+              var balanceTotalNeo = $("#balanceTotalNeo");
+              var balanceTotalGas = $("#balanceTotalGas");
+              request.open("GET", url, true);
+              request.onload = function() {
+                console.log(this.response);
+                jsonObject = JSON.parse(this.response);
+                if (jsonObject.address == "") {
+                  divAddress.text(`There is no active account in your wallet.`)
+                } else {
+                  if (jsonObject.neoBalance >= 0 || jsonObject.gasBalance >= 0) {
+                    balanceActiveText.text(`Balance of ${jsonObject.address}:`);
+                    balanceActiveNeo.text(`Neo: ${jsonObject.neoBalance}`);
+                    balanceActiveGas.text(`Gas: ${jsonObject.gasBalance}`);
+                  } else {
+                    balanceActiveText.text(`The address ${jsonObject.address} does not hold any assets.`);
+                  }
+                  if (jsonObject.totalWalletNeoBalance >= 0 || jsonObject.totalWalletNeoBalance >= 0) {
+                    balanceTotalText.text(`Total balance in your wallet:`);
+                    balanceTotalNeo.text(`Neo: ${jsonObject.totalWalletNeoBalance}`);
+                    balanceTotalGas.text(`Gas: ${jsonObject.totalWalletGasBalance}`);
+                  } else {
+                    balanceTotalText.text(`Your wallet does not hold any assets.`);
+                  }
+                }
+              }
+              request.send();
+            });
+          </script>
+          <div id="balanceResponse">
+            <div id="balanceActiveResponse">
+              <div id="balanceActiveText"></div>
+              <div id="balanceActiveNeo"></div>
+              <div id="balanceActiveGas"></div>
+            </div>
+            <div id="balanceTotalResponse">
+              <div id="balanceTotalText"></div>
+              <div id="balanceTotalNeo"></div>
+              <div id="balanceTotalGas"></div>
+            </div>
+          </div>
         </div>
       </div>
 

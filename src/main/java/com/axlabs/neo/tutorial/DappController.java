@@ -1,6 +1,7 @@
 package com.axlabs.neo.tutorial;
 
 import com.axlabs.neo.tutorial.dto.AddressResponse;
+import com.axlabs.neo.tutorial.dto.BalanceResponse;
 import com.axlabs.neo.tutorial.dto.NameResponse;
 import com.axlabs.neo.tutorial.dto.TransactionResponse;
 import com.axlabs.neo.tutorial.service.ContractService;
@@ -48,8 +49,8 @@ public class DappController {
     }
 
     @PostMapping("/wallet")
-    public AddressResponse setActiveAccount(@RequestParam("accountId") int accountId) {
-        Account account = walletService.getAccount(accountId);
+    public AddressResponse setActiveAccount(@RequestParam("index") int index) {
+        Account account = walletService.getAccount(index);
         if (account != null) {
             contractService.setAccount(account);
             String address = account.getAddress();
@@ -59,9 +60,30 @@ public class DappController {
         }
     }
 
-    @GetMapping("/wallet/{accountId}")
-    public AddressResponse getAddress(@PathVariable("accountId") int accountId) {
-        String address = walletService.getAccountAddress(accountId);
+    @GetMapping("/wallet/balance")
+    public BalanceResponse getNeoBalance() throws IOException, ErrorResponseException {
+        Account activeAccount = contractService.getAccount();
+        int index = walletService.getActiveAccountIndex(activeAccount);
+        if (activeAccount == null) {
+            return new BalanceResponse("", 0,0.0, 0, 0.0);
+        }
+
+        String address = activeAccount.getAddress();
+        int neoBalance = walletService.getNeoBalance(index);
+        double gasBalance = walletService.getGasBalance(index);
+        int totalWalletNeoBalance = walletService.getTotalWalletNeoBalance();
+        double totalWalletGasBalance = walletService.getTotalWalletGasBalance();
+
+        return new BalanceResponse(address,
+                neoBalance,
+                gasBalance,
+                totalWalletNeoBalance,
+                totalWalletGasBalance);
+    }
+
+    @GetMapping("/wallet/{index}")
+    public AddressResponse getAddress(@PathVariable("index") int index) {
+        String address = walletService.getAccountAddress(index);
         return new AddressResponse(address);
     }
 

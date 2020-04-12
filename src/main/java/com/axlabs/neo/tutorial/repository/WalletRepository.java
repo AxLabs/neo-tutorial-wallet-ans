@@ -14,4 +14,8 @@ public interface WalletRepository {
     String getAccountAddress(int addressId);
 
     Account getAccount(int accountId);
+
+    int getNumberAccountsInWallet();
+
+    int getIndexOfAccount(Account account);
 }
