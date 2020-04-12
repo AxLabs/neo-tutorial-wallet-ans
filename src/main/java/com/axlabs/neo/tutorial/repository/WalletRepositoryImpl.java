@@ -37,7 +37,7 @@ public class WalletRepositoryImpl implements WalletRepository {
         if ((accountId >= 0) && (accountId < accounts.size())) {
             return accounts.get(accountId);
         } else {
-            return accounts.get(0);
+            return null;
         }
     }
 }
