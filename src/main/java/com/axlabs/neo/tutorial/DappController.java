@@ -8,10 +8,15 @@ import com.axlabs.neo.tutorial.service.ContractService;
 import com.axlabs.neo.tutorial.service.WalletService;
 import io.neow3j.protocol.exceptions.ErrorResponseException;
 import io.neow3j.wallet.Account;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/")
 @RestController
@@ -65,7 +70,7 @@ public class DappController {
         Account activeAccount = contractService.getAccount();
         int index = walletService.getActiveAccountIndex(activeAccount);
         if (activeAccount == null) {
-            return new BalanceResponse("", 0,0.0, 0, 0.0);
+            return new BalanceResponse("", 0, 0.0, 0, 0.0);
         }
 
         String address = activeAccount.getAddress();

@@ -114,19 +114,17 @@ public class ContractService {
             throws IOException, ErrorResponseException {
         this.account.updateAssetBalances(neow3j);
 
-        if (!contractIsPresent()) {
-            return "";
-        }
-
-        String recipientAddress = null;
-        if (!Keys.isValidAddress(nameOrAddress)) {
-            recipientAddress = this.query(nameOrAddress);
-        } else {
+        String recipientAddress;
+        if (Keys.isValidAddress(nameOrAddress)) {
             recipientAddress = nameOrAddress;
-        }
-
-        if (recipientAddress == null) {
-            return "";
+        } else {
+            if (!contractIsPresent()) {
+                return "";
+            }
+            recipientAddress = this.query(nameOrAddress);
+            if (recipientAddress == null) {
+                return "";
+            }
         }
 
         if (!this.account.getBalances().hasAsset(NEOAsset.HASH_ID)) {
