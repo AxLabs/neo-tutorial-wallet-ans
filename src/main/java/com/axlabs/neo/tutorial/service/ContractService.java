@@ -7,12 +7,12 @@ import io.neow3j.model.types.NEOAsset;
 import io.neow3j.protocol.Neow3j;
 import io.neow3j.protocol.core.methods.response.InvocationResult;
 import io.neow3j.protocol.exceptions.ErrorResponseException;
+import io.neow3j.utils.Keys;
 import io.neow3j.wallet.Account;
 import io.neow3j.wallet.AssetTransfer;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
 
 @Service
 public class ContractService {
@@ -41,8 +41,12 @@ public class ContractService {
         this.contractScriptHash = new ScriptHash("0x83cb6794bfc75f5ed4b5083cdc6c59545cd92834");
     }
 
-    public void setContractScriptHashFromAddress(String address) {
-        this.contractScriptHash = ScriptHash.fromAddress(address);
+    public void setContract(String input) {
+        if (Keys.isValidAddress(input)) {
+            this.contractScriptHash = ScriptHash.fromAddress(input);
+        } else {
+            this.contractScriptHash = new ScriptHash(input);
+        }
     }
 
     public Account getAccount() {
@@ -106,21 +110,29 @@ public class ContractService {
         return delete.getResponse().getSendRawTransaction();
     }
 
-    public String sendNeo(String name, int amount) throws IOException, ErrorResponseException {
+    public String sendNeo(String nameOrAddress, int amount)
+            throws IOException, ErrorResponseException {
         this.account.updateAssetBalances(neow3j);
 
         if (!contractIsPresent()) {
             return "";
         }
 
-        String recipientAddress = this.query(name);
-        if (recipientAddress.equals("")) {
+        String recipientAddress = null;
+        if (!Keys.isValidAddress(nameOrAddress)) {
+            recipientAddress = this.query(nameOrAddress);
+        } else {
+            recipientAddress = nameOrAddress;
+        }
+
+        if (recipientAddress == null) {
             return "";
         }
 
         if (!this.account.getBalances().hasAsset(NEOAsset.HASH_ID)) {
             return "insufficient funds";
-        } else if (this.account.getBalances().getAssetBalance(NEOAsset.HASH_ID).getAmount().doubleValue() <= amount) {
+        } else if (this.account.getBalances().getAssetBalance(NEOAsset.HASH_ID).getAmount()
+                .doubleValue() <= amount) {
             return "insufficient funds";
         }
 

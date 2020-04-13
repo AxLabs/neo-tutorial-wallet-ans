@@ -97,7 +97,7 @@ public class DappController {
     public AddressResponse setContractAddress(
             @RequestParam(value = "address", required = false) String contractAddress) {
         if (contractAddress != null) {
-            contractService.setContractScriptHashFromAddress(contractAddress);
+            contractService.setContract(contractAddress);
         } else {
             contractService.setDefaultANSContractScriptHash();
             contractAddress = contractService.getContractAddress();
@@ -162,11 +162,11 @@ public class DappController {
 
     @PostMapping("/send")
     @ResponseBody
-    public TransactionResponse sendNeo(@RequestParam("name") String name,
+    public TransactionResponse sendNeo(@RequestParam("name") String nameOrAddress,
             @RequestParam("amount") int amount) throws IOException, ErrorResponseException {
         if ((contractService.getAccount()) != null
                 && (contractService.getContractAddress() != null)) {
-            String txId = contractService.sendNeo(name, amount);
+            String txId = contractService.sendNeo(nameOrAddress, amount);
             if (txId.equals("insufficient funds")) {
                 return new TransactionResponse(false, "", "insufficient funds");
             }
