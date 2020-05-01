@@ -25,6 +25,11 @@
         border-radius: 3px;
         border-style: groove;
       }
+      select {
+        height: 25px;
+        border-radius: 3px;
+        border-style: groove;
+      }
       #wallet,
       #contract,
       #assetTransaction {
@@ -397,17 +402,22 @@
       </div>
 
       <div id="assetTransaction">
-        <h4>Send Neo using the name service of the ANS contract</h4>
+        <h4>Send NEO/GAS using the name service of the ANS contract</h4>
         <div id="send">
           <input id="sendNameInput" placeholder="Recipient's Name OR Address"/>
-          <input id="sendAmountInput" placeholder="NEO Amount"/>
+          <input id="sendAmountInput" placeholder="Amount"/>
+          <select id="asset" name="asset">
+            <option value="NEO">NEO</option>
+            <option value="GAS">GAS</option>
+          </select>
           <button id="sendButton">Send</button>
           <script>
             $("#sendButton").click(function () {
               var request = new XMLHttpRequest();
-              var name = $("#sendNameInput").val();
+              var to = $("#sendNameInput").val();
               var amount = $("#sendAmountInput").val();
-              var url = `${host}:${port}/send?name=${name}&amount=${amount}`;
+              var asset = $("#asset").val();
+              var url = `${host}:${port}/send?to=${to}&amount=${amount}&asset=${asset}`;
               var div = $("#sendResponse");
               var divTx = $("#sendTxResponse");
               div.text(``);
@@ -417,21 +427,23 @@
                 console.log(this.response);
                 var jsonObject = JSON.parse(this.response);
                 if (jsonObject.status) {
-                  div.text(`${amount} Neo sent to ${name}.`);
+                  div.text(`${amount} ${asset} sent to ${to}.`);
                   divTx.text(`Transaction ID: ${jsonObject.transactionId}`);
                 } else {
                   if (jsonObject.faultCause == `name not linked`) {
                     div.text(`This name is not linked to an address.`)
                   } else if (jsonObject.faultCause == `insufficient funds`) {
                     div.text(`Your account has insufficient funds to cover this transaction.`)
+                  } else if (jsonObject.faultCause == `asset name not valid`) {
+                    div.text(`The specified asset is not valid.`)
                   } else {
                     div.text(`The contract address is not set or something else went wrong.`)
                   }
                 }
               };
-              if ((name == "") && (amount == "")) {
+              if ((to == "") && (amount == "")) {
                 div.text(`Please provide a name and an amount.`)
-              } else if (name == "") {
+              } else if (to == "") {
                 div.text(`Please provide a name.`)
               } else if (amount == "") {
                 div.text(`Please provide an amount.`)

@@ -167,13 +167,21 @@ public class DappController {
 
     @PostMapping("/send")
     @ResponseBody
-    public TransactionResponse sendNeo(@RequestParam("name") String nameOrAddress,
-            @RequestParam("amount") int amount) throws IOException, ErrorResponseException {
-        if ((contractService.getAccount()) != null
-                && (contractService.getContractAddress() != null)) {
-            String txId = contractService.sendNeo(nameOrAddress, amount);
+    public TransactionResponse sendNeo(
+            @RequestParam("to") String nameOrAddress,
+            @RequestParam("amount") int amount,
+            @RequestParam("asset") String assetName
+    ) throws IOException, ErrorResponseException {
+
+        if (contractService.getAccount() != null
+                && contractService.getContractAddress() != null
+        ) {
+            String txId = contractService.sendAsset(nameOrAddress, amount, assetName);
             if (txId.equals("insufficient funds")) {
                 return new TransactionResponse(false, "", "insufficient funds");
+            }
+            if (txId.equals("asset name not valid")) {
+                return new TransactionResponse(false, "", "asset name not valid");
             }
             if (txId.equals("")) {
                 return new TransactionResponse(false, "", "name not linked");
@@ -182,5 +190,7 @@ public class DappController {
         } else {
             return new TransactionResponse(false, "", "cause unknown");
         }
+
     }
+
 }

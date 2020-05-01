@@ -3,6 +3,7 @@ package com.axlabs.neo.tutorial.service;
 import io.neow3j.contract.ContractInvocation;
 import io.neow3j.contract.ContractParameter;
 import io.neow3j.contract.ScriptHash;
+import io.neow3j.model.types.GASAsset;
 import io.neow3j.model.types.NEOAsset;
 import io.neow3j.protocol.Neow3j;
 import io.neow3j.protocol.core.methods.response.InvocationResult;
@@ -110,7 +111,7 @@ public class ContractService {
         return delete.getResponse().getSendRawTransaction();
     }
 
-    public String sendNeo(String nameOrAddress, int amount)
+    public String sendAsset(String nameOrAddress, int amount, String assetName)
             throws IOException, ErrorResponseException {
         this.account.updateAssetBalances(neow3j);
 
@@ -127,16 +128,29 @@ public class ContractService {
             }
         }
 
-        if (!this.account.getBalances().hasAsset(NEOAsset.HASH_ID)) {
+        String assetHashId = null;
+        switch (assetName.toUpperCase()) {
+            case NEOAsset.NAME:
+                assetHashId = NEOAsset.HASH_ID;
+                break;
+            case GASAsset.NAME:
+            case "GAS":
+                assetHashId = GASAsset.HASH_ID;
+                break;
+            default:
+                return "asset name not valid";
+        }
+
+        if (!this.account.getBalances().hasAsset(assetHashId)) {
             return "insufficient funds";
-        } else if (this.account.getBalances().getAssetBalance(NEOAsset.HASH_ID).getAmount()
+        } else if (this.account.getBalances().getAssetBalance(assetHashId).getAmount()
                 .doubleValue() <= amount) {
             return "insufficient funds";
         }
 
         AssetTransfer assetTransfer = new AssetTransfer.Builder(neow3j)
                 .account(this.account)
-                .output(NEOAsset.HASH_ID, amount, recipientAddress)
+                .output(assetHashId, amount, recipientAddress)
                 .build()
                 .sign()
                 .send();
