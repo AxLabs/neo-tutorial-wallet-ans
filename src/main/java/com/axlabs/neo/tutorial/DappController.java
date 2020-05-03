@@ -32,19 +32,13 @@ public class DappController {
         this.walletService = walletService;
     }
 
-    @PostMapping
+    @PostMapping("/wallet/init")
     @ResponseBody
     public AddressResponse initialize() {
         Account defaultAccount = walletService.getAccount(0);
         String address = defaultAccount.getAddress();
         contractService.setAccount(defaultAccount);
         return new AddressResponse(address);
-    }
-
-    @GetMapping
-    @ResponseBody
-    public String getDefaultAddressInWallet() {
-        return "no method defined yet";
     }
 
     @GetMapping("/wallet")

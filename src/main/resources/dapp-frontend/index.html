@@ -76,7 +76,7 @@
         <script>
           $("#createWalletButton").click(function () {
             var request = new XMLHttpRequest();
-            var url = `${host}:${port}/`;
+            var url = `${host}:${port}/wallet/init`;
             request.open("POST", url, true);
             request.onload = function () {
               console.log(this.response);
